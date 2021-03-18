@@ -10,7 +10,7 @@ const double _kCrossAxisSpacing = 10.0;
 const double _kMainAxisSpacing = 10.0;
 
 class ProductsOverviewScreen extends StatelessWidget {
-  List<Product> products = mockedProducts;
+  final List<Product> products = mockedProducts;
 
   @override
   Widget build(BuildContext context) {
