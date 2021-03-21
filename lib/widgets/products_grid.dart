@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../models/product.dart';
+import '../providers/product.dart';
 import '../widgets/product_item.dart';
 
 const double _kChildAspectRatio = 3 / 2;
@@ -25,8 +26,9 @@ class ProductsGrid extends StatelessWidget {
         crossAxisSpacing: _kCrossAxisSpacing,
         mainAxisSpacing: _kMainAxisSpacing,
       ),
-      itemBuilder: (context, index) => ProductItem(
-        product: products[index],
+      itemBuilder: (context, index) => ChangeNotifierProvider(
+        create: (context) => products[index],
+        child: ProductItem(),
       ),
       itemCount: products.length,
     );
