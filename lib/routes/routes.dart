@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/screens/product_detail.dart';
-import 'package:shop_app/screens/products_overview.dart';
+
+import '../screens/product_detail.dart';
+import '../screens/products_overview.dart';
 
 class AppRoutes {
   static const String ROOT = '/';
@@ -10,7 +11,9 @@ class AppRoutes {
 
 const String kAppInitialRoute = AppRoutes.ROOT;
 
-Map<String, WidgetBuilder> appRoutes = {
-  AppRoutes.ROOT: (context) => ProductsOverviewScreen(),
-  AppRoutes.PRODUCT_DETAILS: (context) => ProductDetailScreen(),
-};
+Map<String, WidgetBuilder> getAppRoutes() {
+  return {
+    AppRoutes.ROOT: (context) => ProductsOverviewScreen(),
+    AppRoutes.PRODUCT_DETAILS: (context) => ProductDetailScreen(),
+  };
+}

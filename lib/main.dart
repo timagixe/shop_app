@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import './routes/routes.dart';
-import './screens/products_overview.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,7 +17,7 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.deepOrange,
         fontFamily: 'Lato',
       ),
-      routes: appRoutes,
+      routes: getAppRoutes(),
     );
   }
 }
