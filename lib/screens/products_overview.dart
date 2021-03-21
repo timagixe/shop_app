@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/cart.dart';
 
 import '../widgets/products_grid.dart';
+import '../widgets/badge.dart';
 
 enum PopupMenuOptions {
   Favorite,
@@ -44,7 +47,17 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 value: PopupMenuOptions.All,
               ),
             ],
-          )
+          ),
+          Consumer<Cart>(
+            builder: (context, cart, child) => Badge(
+              child: child,
+              value: cart.itemsCount.toString(),
+            ),
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.shopping_cart),
+            ),
+          ),
         ],
       ),
       body: ProductsGrid(
