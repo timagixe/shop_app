@@ -15,37 +15,49 @@ class CartSingleItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: ValueKey(item.id),
-      background: Container(
-        margin: EdgeInsets.symmetric(
-          vertical: 4,
-          horizontal: 15,
-        ),
-        color: Theme.of(context).errorColor,
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        vertical: 4,
+        horizontal: 15,
       ),
-      direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        Provider.of<Cart>(context, listen: false).removeItemFromCart(productId);
-      },
-      child: Card(
-        margin: EdgeInsets.symmetric(
-          vertical: 4,
-          horizontal: 15,
+      child: Dismissible(
+        key: ValueKey(item.id),
+        background: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Theme.of(context).errorColor,
+          ),
+          padding: const EdgeInsets.only(right: 10),
+          child: Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+          alignment: Alignment.centerRight,
         ),
-        child: ListTile(
-          leading: CircleAvatar(
-            child: Padding(
-              padding: EdgeInsets.all(5),
-              child: FittedBox(
-                child: Text('${item.price}'),
+        direction: DismissDirection.endToStart,
+        onDismissed: (direction) {
+          Provider.of<Cart>(context, listen: false)
+              .removeItemFromCart(productId);
+        },
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          margin: EdgeInsets.all(0),
+          child: ListTile(
+            leading: CircleAvatar(
+              child: Padding(
+                padding: EdgeInsets.all(5),
+                child: FittedBox(
+                  child: Text('${item.price}'),
+                ),
               ),
             ),
+            title: Text('${item.title}'),
+            subtitle: Text(
+                'Total \$${(item.price * item.quantity).toStringAsFixed(2)}'),
+            trailing: Text('x ${item.quantity}'),
           ),
-          title: Text('${item.title}'),
-          subtitle: Text(
-              'Total \$${(item.price * item.quantity).toStringAsFixed(2)}'),
-          trailing: Text('x ${item.quantity}'),
         ),
       ),
     );
