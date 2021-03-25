@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../providers/product.dart';
+
 class EditProductScreen extends StatefulWidget {
   @override
   EditProductScreenState createState() => EditProductScreenState();
@@ -8,6 +10,8 @@ class EditProductScreen extends StatefulWidget {
 class EditProductScreenState extends State<EditProductScreen> {
   final TextEditingController _imageUrlController = TextEditingController();
   final _imageUrlInputListener = FocusNode();
+  GlobalKey<FormState> _form = GlobalKey<FormState>();
+  Product _formProduct = Product.emptyInstance;
 
   @override
   void initState() {
@@ -22,31 +26,58 @@ class EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
+  void _saveForm() {
+    _form.currentState.save();
+    print(_formProduct.title);
+    print(_formProduct.id);
+    print(_formProduct.price);
+    print(_formProduct.description);
+    print(_formProduct.imageUrl);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit product'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: _saveForm,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Form(
+          key: _form,
           child: ListView(
             children: [
               TextFormField(
                 autofocus: true,
                 decoration: InputDecoration(labelText: 'Title'),
                 textInputAction: TextInputAction.next,
+                onSaved: (title) {
+                  _formProduct = _formProduct.copyWith(title: title);
+                },
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Price'),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
+                onSaved: (price) {
+                  _formProduct =
+                      _formProduct.copyWith(price: double.parse(price));
+                },
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Description'),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
+                onSaved: (description) {
+                  _formProduct =
+                      _formProduct.copyWith(description: description);
+                },
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -85,6 +116,13 @@ class EditProductScreenState extends State<EditProductScreen> {
                       controller: _imageUrlController,
                       onEditingComplete: () {
                         setState(() {});
+                      },
+                      onSaved: (imageUrl) {
+                        _formProduct =
+                            _formProduct.copyWith(imageUrl: imageUrl);
+                      },
+                      onFieldSubmitted: (_) {
+                        _saveForm();
                       },
                       focusNode: _imageUrlInputListener,
                     ),
