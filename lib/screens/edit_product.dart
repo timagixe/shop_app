@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 import '../providers/product.dart';
+import '../providers/products.dart';
 
 class EditProductScreen extends StatefulWidget {
   @override
@@ -43,11 +46,12 @@ class EditProductScreenState extends State<EditProductScreen> {
     }
 
     _form.currentState.save();
-    print(_formProduct.title);
-    print(_formProduct.id);
-    print(_formProduct.price);
-    print(_formProduct.description);
-    print(_formProduct.imageUrl);
+
+    Provider.of<Products>(context, listen: false)
+        .addProduct(_formProduct.copyWith(
+      id: Uuid().v4(),
+    ));
+    Navigator.of(context).pop();
   }
 
   @override
