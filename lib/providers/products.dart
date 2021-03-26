@@ -16,6 +16,17 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateProduct(Product item) {
+    var index = _items.indexWhere((element) => element.id == item.id);
+
+    if (index != -1) {
+      _items[index] = item;
+      notifyListeners();
+    } else {
+      print('updateProduct: product with ${item.id} does not exist');
+    }
+  }
+
   Product findById(String id) {
     return _items.firstWhere((element) => element.id == id);
   }
