@@ -39,6 +39,31 @@ class CartSingleItem extends StatelessWidget {
           Provider.of<Cart>(context, listen: false)
               .removeItemFromCart(productId);
         },
+        confirmDismiss: (direction) {
+          return showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Please confirm item deletion'),
+                content: Text('This action cannot be undone.'),
+                actions: [
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                    child: Text('NO'),
+                  ),
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                    child: Text('YES'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
