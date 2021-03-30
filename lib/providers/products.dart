@@ -34,14 +34,15 @@ class Products with ChangeNotifier {
     try {
       final response = await http.get(Api.products);
       var decodedBody = json.decode(response.body) as Map<String, dynamic>;
+      List<Product> fetchedItems = [];
       decodedBody.forEach((key, value) {
-        _items.add(Product.fromJson(key, value));
+        fetchedItems.add(Product.fromJson(key, value));
       });
+      _items = fetchedItems;
     } catch (error) {
       print(error);
       throw error;
     } finally {
-      print(_items.length);
       notifyListeners();
     }
   }
