@@ -15,8 +15,10 @@ class Products with ChangeNotifier {
   List<Product> get favoriteItems =>
       [...items].where((element) => element.isFavorite).toList();
 
-  void addProduct(Product item) {
-    http.post(Api().products, body: item.toJsonWithoutId()).then((response) {
+  Future<void> addProduct(Product item) {
+    return http
+        .post(Api().products, body: item.toJsonWithoutId())
+        .then((response) {
       final productId = json.decode(response.body)['name'];
       _items.add(item.copyWith(
         id: productId,
