@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 class Product with ChangeNotifier {
@@ -26,6 +28,14 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
+  static Product get emptyInstance => Product(
+        id: '',
+        title: '',
+        description: '',
+        imageUrl: '',
+        price: 0,
+      );
+
   Product copyWith({
     String id,
     String title,
@@ -43,11 +53,24 @@ class Product with ChangeNotifier {
         isFavorite: isFavorite ?? this.isFavorite,
       );
 
-  static Product get emptyInstance => Product(
-        id: '',
-        title: '',
-        description: '',
-        imageUrl: '',
-        price: 0,
+  String toJson() => json.encode(
+        {
+          'id': id,
+          'title': title,
+          'description': description,
+          'imageUrl': imageUrl,
+          'price': price,
+          'isFavorite': isFavorite,
+        },
+      );
+
+  String toJsonWithoutId() => json.encode(
+        {
+          'title': title,
+          'description': description,
+          'imageUrl': imageUrl,
+          'price': price,
+          'isFavorite': isFavorite,
+        },
       );
 }

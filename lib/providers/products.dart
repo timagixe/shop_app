@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../mocks/products.dart';
 import 'product.dart';
+import '../api/api.dart' show Api;
 
 class Products with ChangeNotifier {
   List<Product> _items = [...mockedProducts];
@@ -12,8 +16,13 @@ class Products with ChangeNotifier {
       [...items].where((element) => element.isFavorite).toList();
 
   void addProduct(Product item) {
-    _items.add(item);
-    notifyListeners();
+    http.post(Api().products, body: item.toJsonWithoutId()).then((response) {
+      final productId = json.decode(response.body)['name'];
+      _items.add(item.copyWith(
+        id: productId,
+      ));
+      notifyListeners();
+    });
   }
 
   void updateProduct(Product item) {
