@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/http_exceotion.dart';
 import './product.dart';
 import '../api/api.dart' show Api;
 
@@ -68,9 +69,24 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProductById(String id) {
-    _items.removeWhere((element) => element.id == id);
+  Future<void> deleteProductById(String id) async {
+    final existingProductIndex = _items.indexWhere(
+      (element) => element.id == id,
+    );
+    var existingProduct = _items[existingProductIndex];
+
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+
+    final response = await http.delete(Api.productsById(id));
+
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+
+      throw HttpException(message: 'Could not delete the product');
+    }
+    existingProduct = null;
   }
 
   Product findById(String id) {
