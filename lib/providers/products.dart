@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../mocks/products.dart';
-import 'product.dart';
+import './product.dart';
 import '../api/api.dart' show Api;
 
 class Products with ChangeNotifier {
@@ -47,12 +46,23 @@ class Products with ChangeNotifier {
     }
   }
 
-  void updateProduct(Product item) {
+  Future<void> updateProduct(Product item) async {
     var index = _items.indexWhere((element) => element.id == item.id);
 
     if (index != -1) {
-      _items[index] = item;
-      notifyListeners();
+      try {
+        print(Api.productsById(item.id));
+        await http.patch(
+          Api.productsById(item.id),
+          body: item.toJsonWithoutId(),
+        );
+        _items[index] = item;
+      } catch (error) {
+        print(error);
+        throw error;
+      } finally {
+        notifyListeners();
+      }
     } else {
       print('updateProduct: product with ${item.id} does not exist');
     }

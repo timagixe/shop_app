@@ -92,23 +92,22 @@ class EditProductScreenState extends State<EditProductScreen> {
     _form.currentState.save();
     _setLoadingTrue();
 
-    if (_formProduct.id.length > 0) {
-      Provider.of<Products>(context, listen: false).updateProduct(_formProduct);
-      _setLoadingFalse();
-      Navigator.of(context).pop();
-    } else if (_formProduct.id.length == 0) {
-      try {
+    try {
+      if (_formProduct.id.length > 0) {
+        await Provider.of<Products>(context, listen: false)
+            .updateProduct(_formProduct);
+      } else if (_formProduct.id.length == 0) {
         await Provider.of<Products>(context, listen: false).addProduct(
           _formProduct.copyWith(
             id: Uuid().v4(),
           ),
         );
-      } catch (error) {
-        await _buildAlertDialog(error, context);
-      } finally {
-        _setLoadingFalse();
-        Navigator.of(context).pop();
       }
+    } catch (error) {
+      await _buildAlertDialog(error, context);
+    } finally {
+      _setLoadingFalse();
+      Navigator.of(context).pop();
     }
   }
 
