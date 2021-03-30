@@ -30,6 +30,23 @@ class EditProductScreenState extends State<EditProductScreen> {
     });
   }
 
+  Future<Null> _buildAlertDialog(dynamic error, BuildContext context) {
+    return showDialog<Null>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('An error occurred:'),
+        content: Text(error.toString()),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Okay'))
+        ],
+      ),
+    );
+  }
+
   @override
   void didChangeDependencies() {
     if (_isInit) {
@@ -84,7 +101,9 @@ class EditProductScreenState extends State<EditProductScreen> {
           .addProduct(_formProduct.copyWith(
         id: Uuid().v4(),
       ))
-          .then((value) {
+          .catchError((error) {
+        return _buildAlertDialog(error, context);
+      }).then((value) {
         _setLoadingFalse();
         Navigator.of(context).pop();
       });

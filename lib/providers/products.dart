@@ -24,6 +24,9 @@ class Products with ChangeNotifier {
         id: productId,
       ));
       notifyListeners();
+    }).catchError((error) {
+      print(error);
+      throw error;
     });
   }
 
