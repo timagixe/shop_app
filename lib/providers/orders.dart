@@ -47,6 +47,14 @@ class OrderItem {
               .toList(),
         },
       );
+
+  OrderItem.fromJson(String id, Map<String, dynamic> json)
+      : id = id,
+        amount = json['amount'],
+        dateTime = DateTime.parse(json['dateTime']),
+        products = (json['products'] as List)
+            .map((itemJson) => CartItem.fromJson(itemJson))
+            .toList();
 }
 
 class Orders with ChangeNotifier {
@@ -55,6 +63,20 @@ class Orders with ChangeNotifier {
   List<OrderItem> get items => [..._items];
 
   int get count => _items.length;
+
+  Future<void> fetchOrderItems() async {
+    final response = await http.get(Api.orders);
+    final decodedOrderItems =
+        json.decode(response.body) as Map<String, dynamic>;
+    final List<OrderItem> fetchedOrderItems = [];
+    decodedOrderItems.forEach(
+      (key, value) {
+        fetchedOrderItems.add(OrderItem.fromJson(key, value));
+      },
+    );
+    _items = fetchedOrderItems.reversed.toList();
+    notifyListeners();
+  }
 
   Future<void> addOrderItem({
     @required List<CartItem> cartProducts,
