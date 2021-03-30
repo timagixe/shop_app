@@ -18,7 +18,7 @@ class Products with ChangeNotifier {
   Future<void> addProduct(Product item) async {
     try {
       final response =
-          await http.post(Api().products, body: item.toJsonWithoutId());
+          await http.post(Api.products, body: item.toJsonWithoutId());
       final productId = json.decode(response.body)['name'];
       _items.add(item.copyWith(
         id: productId,
