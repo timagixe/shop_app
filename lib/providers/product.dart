@@ -28,6 +28,14 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
+  Product.fromJson(String id, Map<String, dynamic> json)
+      : id = id,
+        title = json['title'],
+        description = json['description'],
+        imageUrl = json['imageUrl'],
+        price = json['price'],
+        isFavorite = json['isFavorite'];
+
   static Product get emptyInstance => Product(
         id: '',
         title: '',
