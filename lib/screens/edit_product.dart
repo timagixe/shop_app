@@ -82,7 +82,7 @@ class EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     bool isValid = _form.currentState.validate();
 
     if (!isValid) {
@@ -97,16 +97,18 @@ class EditProductScreenState extends State<EditProductScreen> {
       _setLoadingFalse();
       Navigator.of(context).pop();
     } else if (_formProduct.id.length == 0) {
-      Provider.of<Products>(context, listen: false)
-          .addProduct(_formProduct.copyWith(
-        id: Uuid().v4(),
-      ))
-          .catchError((error) {
-        return _buildAlertDialog(error, context);
-      }).then((value) {
+      try {
+        await Provider.of<Products>(context, listen: false).addProduct(
+          _formProduct.copyWith(
+            id: Uuid().v4(),
+          ),
+        );
+      } catch (error) {
+        await _buildAlertDialog(error, context);
+      } finally {
         _setLoadingFalse();
         Navigator.of(context).pop();
-      });
+      }
     }
   }
 

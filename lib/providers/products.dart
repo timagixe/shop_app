@@ -15,19 +15,19 @@ class Products with ChangeNotifier {
   List<Product> get favoriteItems =>
       [...items].where((element) => element.isFavorite).toList();
 
-  Future<void> addProduct(Product item) {
-    return http
-        .post(Api().products, body: item.toJsonWithoutId())
-        .then((response) {
+  Future<void> addProduct(Product item) async {
+    try {
+      final response =
+          await http.post(Api().products, body: item.toJsonWithoutId());
       final productId = json.decode(response.body)['name'];
       _items.add(item.copyWith(
         id: productId,
       ));
       notifyListeners();
-    }).catchError((error) {
+    } catch (error) {
       print(error);
       throw error;
-    });
+    }
   }
 
   void updateProduct(Product item) {
