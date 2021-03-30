@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -16,6 +18,29 @@ class CartItem {
         assert(title != null),
         assert(price != null),
         assert(quantity != null);
+
+  String toJson() => json.encode(
+        {
+          'id': id,
+          'title': title,
+          'price': price,
+          'quantity': quantity,
+        },
+      );
+
+  String toJsonWithoutId() => json.encode(
+        {
+          'title': title,
+          'price': price,
+          'quantity': quantity,
+        },
+      );
+
+  CartItem.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        title = json['title'],
+        price = json['price'],
+        quantity = json['quantity'];
 }
 
 class Cart with ChangeNotifier {

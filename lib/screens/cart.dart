@@ -43,21 +43,7 @@ class CartScreen extends StatelessWidget {
                   SizedBox(
                     width: 5,
                   ),
-                  FlatButton(
-                    onPressed: () {
-                      orders.addOrderItem(
-                        cartProducts: cart.items.values.toList(),
-                        amount: cart.totalAmount,
-                      );
-                      cart.clear();
-                    },
-                    child: Text(
-                      'ORDER NOW',
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  )
+                  OrderNowButton(orders: orders, cart: cart)
                 ],
               ),
             ),
@@ -72,6 +58,71 @@ class CartScreen extends StatelessWidget {
             ),
           )
         ],
+      ),
+    );
+  }
+}
+
+class OrderNowButton extends StatefulWidget {
+  const OrderNowButton({
+    Key key,
+    @required this.orders,
+    @required this.cart,
+  }) : super(key: key);
+
+  final Orders orders;
+  final Cart cart;
+
+  @override
+  _OrderNowButtonState createState() => _OrderNowButtonState();
+}
+
+class _OrderNowButtonState extends State<OrderNowButton> {
+  bool _isLoading = false;
+
+  void _toggleLoading() {
+    setState(() {
+      _isLoading = !_isLoading;
+    });
+  }
+
+  Widget _buildButtonText(
+    bool isButtonDisabled,
+  ) {
+    return _isLoading
+        ? SizedBox(
+            height: 25.0,
+            width: 25.0,
+            child: CircularProgressIndicator(),
+          )
+        : Text(
+            'ORDER NOW',
+            style: TextStyle(
+              color: isButtonDisabled
+                  ? Colors.grey
+                  : Theme.of(context).primaryColor,
+            ),
+          );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isButtonDisabled = widget.cart.totalAmount <= 0 || _isLoading;
+
+    return TextButton(
+      onPressed: (isButtonDisabled)
+          ? null
+          : () async {
+              _toggleLoading();
+              await widget.orders.addOrderItem(
+                cartProducts: widget.cart.items.values.toList(),
+                amount: widget.cart.totalAmount,
+              );
+              widget.cart.clear();
+              _toggleLoading();
+            },
+      child: _buildButtonText(
+        isButtonDisabled,
       ),
     );
   }

@@ -1,4 +1,10 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+
+import '../api/api.dart';
+import '../models/http_exceotion.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -21,10 +27,37 @@ class Product with ChangeNotifier {
         assert(imageUrl != null),
         assert(price != null);
 
-  void toggleFavoriteStatus() {
+  Future<void> toggleFavoriteStatus() async {
     isFavorite = !isFavorite;
     notifyListeners();
+
+    final response = await http.patch(
+      Api.productsById(id),
+      body: this.copyWith().toJsonWithoutId(),
+    );
+
+    if (response.statusCode >= 400) {
+      isFavorite = !isFavorite;
+      notifyListeners();
+      throw HttpException(message: 'Could not update favorite status');
+    }
   }
+
+  Product.fromJson(String id, Map<String, dynamic> json)
+      : id = id,
+        title = json['title'],
+        description = json['description'],
+        imageUrl = json['imageUrl'],
+        price = json['price'],
+        isFavorite = json['isFavorite'];
+
+  static Product get emptyInstance => Product(
+        id: '',
+        title: '',
+        description: '',
+        imageUrl: '',
+        price: 0,
+      );
 
   Product copyWith({
     String id,
@@ -43,11 +76,24 @@ class Product with ChangeNotifier {
         isFavorite: isFavorite ?? this.isFavorite,
       );
 
-  static Product get emptyInstance => Product(
-        id: '',
-        title: '',
-        description: '',
-        imageUrl: '',
-        price: 0,
+  String toJson() => json.encode(
+        {
+          'id': id,
+          'title': title,
+          'description': description,
+          'imageUrl': imageUrl,
+          'price': price,
+          'isFavorite': isFavorite,
+        },
+      );
+
+  String toJsonWithoutId() => json.encode(
+        {
+          'title': title,
+          'description': description,
+          'imageUrl': imageUrl,
+          'price': price,
+          'isFavorite': isFavorite,
+        },
       );
 }
