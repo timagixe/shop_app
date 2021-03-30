@@ -31,28 +31,28 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
       drawer: AppDrawer(),
       body: FutureBuilder(
-          future: _ordersFuture,
-          builder: (context, dataSnapshot) {
-            print(dataSnapshot.connectionState);
-            if (dataSnapshot.connectionState == ConnectionState.waiting) {
+        future: _ordersFuture,
+        builder: (context, dataSnapshot) {
+          print(dataSnapshot.connectionState);
+          if (dataSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: Center(child: CircularProgressIndicator()),
+            );
+          } else {
+            if (dataSnapshot.error != null) {
               return Center(
-                child: Center(child: CircularProgressIndicator()),
+                child: Text('Error occurred when loading data'),
               );
             } else {
-              if (dataSnapshot.error != null) {
-                return Center(
-                  child: Text('Error occurred when loading data'),
-                );
-              } else {
-                return ListView.builder(
-                  itemBuilder: (context, index) =>
-                      OrderSingleItem(orderItem: orders.items[index]),
-                  itemCount: orders.count,
-                );
-              }
+              return ListView.builder(
+                itemBuilder: (context, index) =>
+                    OrderSingleItem(orderItem: orders.items[index]),
+                itemCount: orders.count,
+              );
             }
-          }),
-      // ,
+          }
+        },
+      ),
     );
   }
 }
