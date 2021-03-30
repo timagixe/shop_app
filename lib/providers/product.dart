@@ -1,6 +1,10 @@
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+
+import '../api/api.dart';
+import '../models/http_exceotion.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -23,9 +27,20 @@ class Product with ChangeNotifier {
         assert(imageUrl != null),
         assert(price != null);
 
-  void toggleFavoriteStatus() {
+  Future<void> toggleFavoriteStatus() async {
     isFavorite = !isFavorite;
     notifyListeners();
+
+    final response = await http.patch(
+      Api.productsById(id),
+      body: this.copyWith().toJsonWithoutId(),
+    );
+
+    if (response.statusCode >= 400) {
+      isFavorite = !isFavorite;
+      notifyListeners();
+      throw HttpException(message: 'Could not update favorite status');
+    }
   }
 
   Product.fromJson(String id, Map<String, dynamic> json)
