@@ -23,7 +23,6 @@ const String kAppInitialRoute = AppRoutes.ROOT;
 
 Map<String, WidgetBuilder> getAppRoutes() {
   return {
-    AppRoutes.ROOT: (context) => AuthScreen(),
     AppRoutes.AUTH: (context) => AuthScreen(),
     AppRoutes.PRODUCTS_OVERVIEW: (context) => ProductsOverviewScreen(),
     AppRoutes.PRODUCT_DETAILS: (context) => ProductDetailScreen(),

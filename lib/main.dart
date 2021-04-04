@@ -6,6 +6,8 @@ import './providers/products.dart';
 import './routes/routes.dart';
 import './providers/cart.dart';
 import './providers/orders.dart';
+import './screens/products_overview.dart';
+import './screens/auth.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,15 +31,18 @@ class MyApp extends StatelessWidget {
           create: (context) => Orders(),
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Shop',
-        theme: ThemeData(
-          primarySwatch: Colors.purple,
-          accentColor: Colors.deepOrange,
-          fontFamily: 'Lato',
+      child: Consumer<Auth>(
+        builder: (context, authData, child) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Shop',
+          theme: ThemeData(
+            primarySwatch: Colors.purple,
+            accentColor: Colors.deepOrange,
+            fontFamily: 'Lato',
+          ),
+          home: authData.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          routes: getAppRoutes(),
         ),
-        routes: getAppRoutes(),
       ),
     );
   }

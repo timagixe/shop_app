@@ -9,8 +9,21 @@ import '../api/keys.dart';
 
 class Auth extends ChangeNotifier {
   String _token;
-  DateTime _expiryDate;
+  DateTime _expiresAt;
   String _userId;
+
+  bool get isAuth {
+    return token != null;
+  }
+
+  String get token {
+    if (_token != null &&
+        _expiresAt != null &&
+        _expiresAt.isAfter(DateTime.now())) {
+      return _token;
+    }
+    return null;
+  }
 
   Future<void> _authenticate({
     @required Uri url,
@@ -32,7 +45,19 @@ class Auth extends ChangeNotifier {
       if (responseDecoded['error'] != null) {
         throw HttpException(responseDecoded['error']['message']);
       }
+
+      print(responseDecoded);
+
+      _token = responseDecoded['idToken'];
+      _expiresAt = DateTime.now().add(
+        Duration(
+          seconds: int.parse(responseDecoded['expiresIn']),
+        ),
+      );
+      _userId = responseDecoded['localId'];
+      notifyListeners();
     } catch (error) {
+      print(error);
       throw error;
     }
   }
