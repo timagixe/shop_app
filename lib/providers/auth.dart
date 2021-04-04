@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -8,7 +9,7 @@ import '../api/keys.dart';
 
 class Auth extends ChangeNotifier {
   String _token;
-  String _expiryDate;
+  DateTime _expiryDate;
   String _userId;
 
   Future<void> _authenticate({
@@ -16,16 +17,24 @@ class Auth extends ChangeNotifier {
     @required String email,
     @required String password,
   }) async {
-    final response = await http.post(
-      url,
-      body: json.encode({
-        'email': email,
-        'password': password,
-        'returnSecureToken': true,
-      }),
-    );
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'email': email,
+          'password': password,
+          'returnSecureToken': true,
+        }),
+      );
 
-    print(json.decode(response.body));
+      final responseDecoded = json.decode(response.body);
+
+      if (responseDecoded['error'] != null) {
+        throw HttpException(responseDecoded['error']['message']);
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   Future<void> signUp({

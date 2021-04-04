@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/models/http_exceotion.dart';
 
 import '../providers/auth.dart';
 
@@ -33,17 +34,22 @@ class _AuthWidgetState extends State<AuthWidget> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      await Provider.of<Auth>(context, listen: false).logIn(
-        email: _authData['email'],
-        password: _authData['password'],
-      );
-    } else {
-      await Provider.of<Auth>(context, listen: false).signUp(
-        email: _authData['email'],
-        password: _authData['password'],
-      );
+    try {
+      if (_authMode == AuthMode.Login) {
+        await Provider.of<Auth>(context, listen: false).logIn(
+          email: _authData['email'],
+          password: _authData['password'],
+        );
+      } else {
+        await Provider.of<Auth>(context, listen: false).signUp(
+          email: _authData['email'],
+          password: _authData['password'],
+        );
+      }
+    } catch (error) {
+      _buildShowDialog(error.toString());
     }
+
     setState(() {
       _isLoading = false;
     });
@@ -59,6 +65,24 @@ class _AuthWidgetState extends State<AuthWidget> {
         _authMode = AuthMode.Login;
       });
     }
+  }
+
+  void _buildShowDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('An error occurred'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Okay'),
+          )
+        ],
+      ),
+    );
   }
 
   @override
