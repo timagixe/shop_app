@@ -25,7 +25,10 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product item) async {
     try {
-      final response = await http.post(Api.products(authToken),
+      final response = await http.post(
+          Api.products(
+            authToken: authToken,
+          ),
           body: item.toJsonWithoutId());
       final productId = json.decode(response.body)['name'];
       _items.add(item.copyWith(
@@ -37,9 +40,15 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts({
+    bool filterByUser = false,
+  }) async {
     try {
-      final productsResponse = await http.get(Api.products(authToken));
+      final productsResponse = await http.get(Api.products(
+        userId: userId,
+        authToken: authToken,
+        filterByUser: filterByUser,
+      ));
       final productsData =
           json.decode(productsResponse.body) as Map<String, dynamic>;
 
