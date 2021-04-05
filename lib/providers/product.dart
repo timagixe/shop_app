@@ -27,13 +27,20 @@ class Product with ChangeNotifier {
         assert(imageUrl != null),
         assert(price != null);
 
-  Future<void> toggleFavoriteStatus() async {
+  Future<void> toggleFavoriteStatus({
+    @required String authToken,
+    @required String userId,
+  }) async {
     isFavorite = !isFavorite;
     notifyListeners();
 
-    final response = await http.patch(
-      Api.productsById(id),
-      body: this.copyWith().toJsonWithoutId(),
+    final response = await http.put(
+      Api.favoriteProductForUserIdByProductId(
+        userId: userId,
+        authToken: authToken,
+        productId: id,
+      ),
+      body: json.encode(isFavorite),
     );
 
     if (response.statusCode >= 400) {

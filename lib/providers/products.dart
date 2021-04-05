@@ -8,7 +8,15 @@ import './product.dart';
 import '../api/api.dart' show Api;
 
 class Products with ChangeNotifier {
-  List<Product> _items = [];
+  List<Product> _items;
+  final String authToken;
+  final String userId;
+
+  Products(
+    this._items, {
+    @required this.authToken,
+    @required this.userId,
+  });
 
   List<Product> get items => [..._items];
 
@@ -17,30 +25,54 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product item) async {
     try {
-      final response =
-          await http.post(Api.products, body: item.toJsonWithoutId());
+      final response = await http.post(
+          Api.products(
+            authToken: authToken,
+          ),
+          body: item.toJsonWithoutId());
       final productId = json.decode(response.body)['name'];
       _items.add(item.copyWith(
         id: productId,
       ));
       notifyListeners();
     } catch (error) {
-      print(error);
       throw error;
     }
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts({
+    bool filterByUser = false,
+  }) async {
     try {
-      final response = await http.get(Api.products);
-      var decodedBody = json.decode(response.body) as Map<String, dynamic>;
+      final productsResponse = await http.get(Api.products(
+        userId: userId,
+        authToken: authToken,
+        filterByUser: filterByUser,
+      ));
+      final productsData =
+          json.decode(productsResponse.body) as Map<String, dynamic>;
+
+      final favoriteProductsResponse =
+          await http.get(Api.favoriteProductsForUserId(
+        userId: userId,
+        authToken: authToken,
+      ));
+      final favoriteProductsData = json.decode(favoriteProductsResponse.body);
+
       List<Product> fetchedItems = [];
-      decodedBody.forEach((key, value) {
-        fetchedItems.add(Product.fromJson(key, value));
+      productsData.forEach((key, value) {
+        final bool isFavorite = favoriteProductsData == null
+            ? false
+            : favoriteProductsData[key] ?? false;
+
+        fetchedItems.add(
+          Product.fromJson(key, value).copyWith(
+            isFavorite: isFavorite,
+          ),
+        );
       });
       _items = fetchedItems;
     } catch (error) {
-      print(error);
       throw error;
     } finally {
       notifyListeners();
@@ -52,14 +84,15 @@ class Products with ChangeNotifier {
 
     if (index != -1) {
       try {
-        print(Api.productsById(item.id));
         await http.patch(
-          Api.productsById(item.id),
+          Api.productsById(
+            id: item.id,
+            authToken: authToken,
+          ),
           body: item.toJsonWithoutId(),
         );
         _items[index] = item;
       } catch (error) {
-        print(error);
         throw error;
       } finally {
         notifyListeners();
@@ -78,7 +111,10 @@ class Products with ChangeNotifier {
     _items.removeAt(existingProductIndex);
     notifyListeners();
 
-    final response = await http.delete(Api.productsById(id));
+    final response = await http.delete(Api.productsById(
+      id: id,
+      authToken: authToken,
+    ));
 
     if (response.statusCode >= 400) {
       _items.insert(existingProductIndex, existingProduct);

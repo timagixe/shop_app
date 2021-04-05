@@ -59,15 +59,26 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _items = [];
+  final String authToken;
+  final String userId;
+
+  Orders(
+    this._items, {
+    @required this.authToken,
+    @required this.userId,
+  });
 
   List<OrderItem> get items => [..._items];
 
   int get count => _items.length;
 
   Future<void> fetchOrderItems() async {
-    final response = await http.get(Api.orders);
+    final response = await http.get(Api.orders(
+      authToken: authToken,
+      userId: userId,
+    ));
     final decodedOrderItems =
-        json.decode(response.body) as Map<String, dynamic>;
+        json.decode(response.body) as Map<String, dynamic> ?? {};
     final List<OrderItem> fetchedOrderItems = [];
     decodedOrderItems.forEach(
       (key, value) {
@@ -83,26 +94,34 @@ class Orders with ChangeNotifier {
     @required double amount,
   }) async {
     final createdAt = DateTime.now();
-    final response = await http.post(
-      Api.orders,
-      body: OrderItem(
-        id: Uuid().v4(),
-        amount: amount,
-        dateTime: createdAt,
-        products: cartProducts,
-      ).toJsonWithoutId(),
-    );
-
-    final orderItemId = json.decode(response.body)['name'];
-
-    _items.insert(
-        0,
-        OrderItem(
-          id: orderItemId,
+    try {
+      final response = await http.post(
+        Api.orders(
+          authToken: authToken,
+          userId: userId,
+        ),
+        body: OrderItem(
+          id: Uuid().v4(),
           amount: amount,
           dateTime: createdAt,
           products: cartProducts,
-        ));
-    notifyListeners();
+        ).toJsonWithoutId(),
+      );
+
+      final orderItemId = json.decode(response.body)['name'];
+
+      _items.insert(
+          0,
+          OrderItem(
+            id: orderItemId,
+            amount: amount,
+            dateTime: createdAt,
+            products: cartProducts,
+          ));
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
+    }
   }
 }

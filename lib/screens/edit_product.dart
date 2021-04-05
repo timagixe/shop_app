@@ -151,7 +151,7 @@ class EditProductScreenState extends State<EditProductScreen> {
                     TextFormField(
                       initialValue: _formProduct.price == 0
                           ? ''
-                          : _formProduct.toString(),
+                          : _formProduct.price.toString(),
                       decoration: InputDecoration(labelText: 'Price'),
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.number,
