@@ -7,7 +7,9 @@ class Api {
   static const _products = 'products.json';
   static const _signUp = 'v1/accounts:signUp';
   static const _signInWithPassword = 'v1/accounts:signInWithPassword';
-  static const _orders = 'orders.json';
+  static _ordersByUserId(String id) {
+    return 'orders/$id.json';
+  }
 
   static Uri favoriteProductForUserIdByProductId({
     String userId,
@@ -93,10 +95,13 @@ class Api {
           );
   }
 
-  static Uri orders(String authToken) {
+  static Uri orders({
+    String authToken,
+    String userId,
+  }) {
     return Uri.https(
       _baseUrl,
-      _orders,
+      _ordersByUserId(userId),
       {
         'auth': authToken,
       },
