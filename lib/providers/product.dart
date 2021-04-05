@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
 import '../api/api.dart';
-import '../models/http_exceotion.dart';
+import '../models/http_exception.dart';
 
 class Product with ChangeNotifier {
   final String id;
