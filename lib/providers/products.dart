@@ -10,10 +10,12 @@ import '../api/api.dart' show Api;
 class Products with ChangeNotifier {
   List<Product> _items;
   final String authToken;
+  final String userId;
 
   Products(
     this._items, {
     @required this.authToken,
+    @required this.userId,
   });
 
   List<Product> get items => [..._items];
@@ -37,11 +39,28 @@ class Products with ChangeNotifier {
 
   Future<void> fetchAndSetProducts() async {
     try {
-      final response = await http.get(Api.products(authToken));
-      var decodedBody = json.decode(response.body) as Map<String, dynamic>;
+      final productsResponse = await http.get(Api.products(authToken));
+      final productsData =
+          json.decode(productsResponse.body) as Map<String, dynamic>;
+
+      final favoriteProductsResponse =
+          await http.get(Api.favoriteProductsForUserId(
+        userId: userId,
+        authToken: authToken,
+      ));
+      final favoriteProductsData = json.decode(favoriteProductsResponse.body);
+
       List<Product> fetchedItems = [];
-      decodedBody.forEach((key, value) {
-        fetchedItems.add(Product.fromJson(key, value));
+      productsData.forEach((key, value) {
+        final bool isFavorite = favoriteProductsData == null
+            ? false
+            : favoriteProductsData[key] ?? false;
+
+        fetchedItems.add(
+          Product.fromJson(key, value).copyWith(
+            isFavorite: isFavorite,
+          ),
+        );
       });
       _items = fetchedItems;
     } catch (error) {

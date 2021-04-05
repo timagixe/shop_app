@@ -7,6 +7,33 @@ class Api {
   static const _signInWithPassword = 'v1/accounts:signInWithPassword';
   static const _orders = 'orders.json';
 
+  static Uri favoriteProductForUserIdByProductId({
+    String userId,
+    String authToken,
+    String productId,
+  }) {
+    return Uri.https(
+      _baseUrl,
+      '/favoriteProducts/$userId/$productId.json',
+      {
+        'auth': authToken,
+      },
+    );
+  }
+
+  static Uri favoriteProductsForUserId({
+    String userId,
+    String authToken,
+  }) {
+    return Uri.https(
+      _baseUrl,
+      '/favoriteProducts/$userId.json',
+      {
+        'auth': authToken,
+      },
+    );
+  }
+
   static Uri productsById({
     String id,
     String authToken,
