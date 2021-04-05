@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,7 @@ class Auth extends ChangeNotifier {
   String _token;
   DateTime _expiresAt;
   String _userId;
+  Timer _authTimer;
 
   bool get isAuth {
     return token != null;
@@ -55,6 +57,7 @@ class Auth extends ChangeNotifier {
         ),
       );
       _userId = responseDecoded['localId'];
+      _autoLogOut();
       notifyListeners();
     } catch (error) {
       throw error;
@@ -81,5 +84,24 @@ class Auth extends ChangeNotifier {
       email: email,
       password: password,
     );
+  }
+
+  void logOut() {
+    _token = null;
+    _expiresAt = null;
+    _userId = null;
+    if (_authTimer != null) {
+      _authTimer.cancel();
+    }
+    notifyListeners();
+  }
+
+  void _autoLogOut() {
+    final expireInSeconds = _expiresAt.difference(DateTime.now()).inSeconds;
+    if (_authTimer != null) {
+      _authTimer.cancel();
+    }
+
+    _authTimer = Timer(Duration(seconds: expireInSeconds), logOut);
   }
 }
