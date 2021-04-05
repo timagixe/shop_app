@@ -27,12 +27,17 @@ class Product with ChangeNotifier {
         assert(imageUrl != null),
         assert(price != null);
 
-  Future<void> toggleFavoriteStatus() async {
+  Future<void> toggleFavoriteStatus({
+    @required String authToken,
+  }) async {
     isFavorite = !isFavorite;
     notifyListeners();
 
     final response = await http.patch(
-      Api.productsById(id),
+      Api.productsById(
+        id: id,
+        authToken: authToken,
+      ),
       body: this.copyWith().toJsonWithoutId(),
     );
 

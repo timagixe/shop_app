@@ -46,8 +46,6 @@ class Auth extends ChangeNotifier {
         throw HttpException(responseDecoded['error']['message']);
       }
 
-      print(responseDecoded);
-
       _token = responseDecoded['idToken'];
       _expiresAt = DateTime.now().add(
         Duration(
@@ -57,7 +55,6 @@ class Auth extends ChangeNotifier {
       _userId = responseDecoded['localId'];
       notifyListeners();
     } catch (error) {
-      print(error);
       throw error;
     }
   }

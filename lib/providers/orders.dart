@@ -59,13 +59,19 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _items = [];
+  final String authToken;
+
+  Orders(
+    this._items, {
+    @required this.authToken,
+  });
 
   List<OrderItem> get items => [..._items];
 
   int get count => _items.length;
 
   Future<void> fetchOrderItems() async {
-    final response = await http.get(Api.orders);
+    final response = await http.get(Api.orders(authToken));
     final decodedOrderItems =
         json.decode(response.body) as Map<String, dynamic>;
     final List<OrderItem> fetchedOrderItems = [];
@@ -84,7 +90,7 @@ class Orders with ChangeNotifier {
   }) async {
     final createdAt = DateTime.now();
     final response = await http.post(
-      Api.orders,
+      Api.orders(authToken),
       body: OrderItem(
         id: Uuid().v4(),
         amount: amount,

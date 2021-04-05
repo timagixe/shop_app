@@ -3,14 +3,27 @@ class Api {
   static const _baseAuthUrl = 'identitytoolkit.googleapis.com';
 
   static const _products = 'products.json';
-  static Uri productsById(String id) {
-    return Uri.https(_baseUrl, '/products/$id.json');
+  static const _signUp = 'v1/accounts:signUp';
+  static const _signInWithPassword = 'v1/accounts:signInWithPassword';
+  static const _orders = 'orders.json';
+
+  static Uri productsById({
+    String id,
+    String authToken,
+  }) {
+    return Uri.https(
+      _baseUrl,
+      '/products/$id.json',
+      {
+        'auth': authToken,
+      },
+    );
   }
 
   static Uri signUp(String apiKey) {
     return Uri.https(
       _baseAuthUrl,
-      '/v1/accounts:signUp',
+      _signUp,
       {
         'key': apiKey,
       },
@@ -20,15 +33,30 @@ class Api {
   static Uri logIn(String apiKey) {
     return Uri.https(
       _baseAuthUrl,
-      '/v1/accounts:signInWithPassword',
+      _signInWithPassword,
       {
         'key': apiKey,
       },
     );
   }
 
-  static const _orders = 'orders.json';
+  static Uri products(String authToken) {
+    return Uri.https(
+      _baseUrl,
+      _products,
+      {
+        'auth': authToken,
+      },
+    );
+  }
 
-  static Uri get products => Uri.https(_baseUrl, _products);
-  static Uri get orders => Uri.https(_baseUrl, _orders);
+  static Uri orders(String authToken) {
+    return Uri.https(
+      _baseUrl,
+      _orders,
+      {
+        'auth': authToken,
+      },
+    );
+  }
 }

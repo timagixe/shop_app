@@ -33,7 +33,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       body: FutureBuilder(
         future: _ordersFuture,
         builder: (context, dataSnapshot) {
-          print(dataSnapshot.connectionState);
           if (dataSnapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: Center(child: CircularProgressIndicator()),
