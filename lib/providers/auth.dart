@@ -35,7 +35,6 @@ class Auth extends ChangeNotifier {
     @required String email,
     @required String password,
   }) async {
-    print('login');
     try {
       final response = await http.post(
         url,
