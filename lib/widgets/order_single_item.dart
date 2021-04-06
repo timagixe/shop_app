@@ -20,34 +20,44 @@ class _OrderSingleItemState extends State<OrderSingleItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(10),
-      child: Column(
-        children: [
-          ListTile(
-            title: Text('\$${widget.orderItem.amount.toStringAsFixed(2)}'),
-            subtitle: Text(
-              DateFormat('dd.MM.yyyy hh:mm').format(widget.orderItem.dateTime),
-            ),
-            trailing: IconButton(
-              icon: Icon(
-                _expanded ? Icons.expand_less : Icons.expand_more,
+    return AnimatedContainer(
+      height: _expanded
+          ? min(widget.orderItem.products.length.toDouble() * 25 + 110, 200)
+          : 100,
+      curve: Curves.linear,
+      duration: Duration(milliseconds: 300),
+      child: Card(
+        margin: EdgeInsets.all(10),
+        child: Column(
+          children: [
+            ListTile(
+              title: Text('\$${widget.orderItem.amount.toStringAsFixed(2)}'),
+              subtitle: Text(
+                DateFormat('dd.MM.yyyy hh:mm')
+                    .format(widget.orderItem.dateTime),
               ),
-              onPressed: () {
-                setState(() {
-                  _expanded = !_expanded;
-                });
-              },
+              trailing: IconButton(
+                icon: Icon(
+                  _expanded ? Icons.expand_less : Icons.expand_more,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _expanded = !_expanded;
+                  });
+                },
+              ),
             ),
-          ),
-          if (_expanded)
-            Container(
+            AnimatedContainer(
+              curve: Curves.linear,
+              duration: Duration(milliseconds: 300),
               padding: EdgeInsets.symmetric(
                 vertical: 4,
                 horizontal: 15,
               ),
-              height: min(
-                  widget.orderItem.products.length.toDouble() * 25 + 8, 125),
+              height: _expanded
+                  ? min(
+                      widget.orderItem.products.length.toDouble() * 25 + 8, 125)
+                  : 0,
               child: ListView.builder(
                   itemBuilder: (context, index) => Container(
                         height: 25,
@@ -72,7 +82,8 @@ class _OrderSingleItemState extends State<OrderSingleItem> {
                       ),
                   itemCount: widget.orderItem.products.length),
             )
-        ],
+          ],
+        ),
       ),
     );
   }

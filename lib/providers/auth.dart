@@ -35,7 +35,6 @@ class Auth extends ChangeNotifier {
     @required String email,
     @required String password,
   }) async {
-    print('login');
     try {
       final response = await http.post(
         url,
@@ -75,7 +74,6 @@ class Auth extends ChangeNotifier {
   }
 
   Future<bool> tryAutoLogin() async {
-    print('auto login');
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('userData')) {
       return false;
